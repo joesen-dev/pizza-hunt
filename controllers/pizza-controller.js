@@ -4,6 +4,18 @@ const pizzaController = {
   // get all pizzas
   getAllPizza(req, res) {
     Pizza.find({})
+      .populate({
+        path: "comments",
+        // use the select option inside of populate(),
+        // to tell Mongoose that we don't care about the __v field on comments
+        // minus sign - in front of the field indicates that we don't want it to be returned
+        // If we didn't have the - , it would mean that it would return only the __v field
+        select: "-__v",
+      })
+      .select("-__v")
+      // use .sort({ _id: -1 }) to sort in DESC order by the _id value
+      // This gets the newest pizza because a timestamp value is hidden somewhere inside the MongoDB ObjectId
+      .sort({ _id: -1 })
       .then((dbPizzaData) => res.json(dbPizzaData))
       .catch((err) => {
         console.log(err);
@@ -15,6 +27,11 @@ const pizzaController = {
   getPizzaById({ params }, res) {
     // {params} - destructure the params out of the Express.js req object
     Pizza.findOne({ _id: params.id })
+      .populate({
+        path: "comments",
+        select: "-__v",
+      })
+      .select("-__v")
       .then((dbPizzaData) => {
         // If no pizza is found, send 404
         if (!dbPizzaData) {
