@@ -57,7 +57,11 @@ const pizzaController = {
   // update pizza by id
   updatePizza({ params, body }, res) {
     // { params, body } - destructure the params & body out of the Express.js req object
-    Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true })
+    Pizza.findOneAndUpdate({ _id: params.id }, body, {
+      new: true,
+      // runValidators: true - include this explicit setting when updating data so that it knows to validate any new information
+      runValidators: true,
+    })
       // If we don't set that third parameter, { new: true }, it will return the original document.
       // By setting the parameter to true, we're instructing Mongoose to return the new version of the document.
       .then((dbPizzaData) => {
